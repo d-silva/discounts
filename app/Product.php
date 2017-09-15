@@ -3,14 +3,14 @@
  * Created by PhpStorm.
  * User: dsilva
  * Date: 15-09-2017
- * Time: 20:36
+ * Time: 21:27
  */
 
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Customer extends Model {
+class Product extends Model {
 
 	/**
 	 * Set to false to prevent Laravel Eloquent to automatically create created_at and updated_at columns
@@ -18,5 +18,5 @@ class Customer extends Model {
 	 */
 	public $timestamps = false;
 
-	protected $fillable = ['id', 'name', 'since', 'revenue'];
+	protected $fillable = ['id', 'description', 'category', 'price'];
 }
