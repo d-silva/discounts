@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableProducts extends Migration
+class CreateTableOrders extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateTableProducts extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->string('id')->unique();
-            $table->primary('id');
-            $table->string('description');
-            $table->integer('category');
-            $table->decimal('price', 6,2);
+        Schema::create('orders', function (Blueprint $table) {
+	        $table->integer('id')->unsigned();
+	        $table->primary('id');
+	        $table->integer('customer_id', false, true);
+	        $table->foreign('customer_id')->references('id')->on('customers');
+	        $table->decimal('total', 8,2);
         });
     }
 
@@ -30,8 +30,7 @@ class CreateTableProducts extends Migration
     public function down()
     {
 	    \Illuminate\Support\Facades\DB::statement("SET foreign_key_checks = 0");
-	    Schema::dropIfExists('products');
+	    Schema::dropIfExists('orders');
 	    \Illuminate\Support\Facades\DB::statement("SET foreign_key_checks = 1");
-
     }
 }

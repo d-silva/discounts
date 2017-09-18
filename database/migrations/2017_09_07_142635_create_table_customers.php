@@ -28,6 +28,8 @@ class CreateTableCustomers extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+    	\Illuminate\Support\Facades\DB::statement("SET foreign_key_checks = 0");
+	    Schema::dropIfExists('customers');
+	    \Illuminate\Support\Facades\DB::statement("SET foreign_key_checks = 1");
     }
 }
