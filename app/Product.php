@@ -20,6 +20,12 @@ class Product extends Model {
 	 */
 	public $timestamps = false;
 
+	/**
+	 * To be able to set the id when creating a new product
+	 * @var bool
+	 */
+	public $incrementing = false;
+
 	protected $primaryKey = 'id';
 
 	protected $fillable = ['id', 'description', 'category', 'price'];
