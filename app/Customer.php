@@ -18,5 +18,15 @@ class Customer extends Model {
 	 */
 	public $timestamps = false;
 
+	protected $primaryKey = 'id';
+
 	protected $fillable = ['id', 'name', 'since', 'revenue'];
+
+	/**
+	 * Get the customer orders.
+	 */
+	public function orders()
+	{
+		return $this->hasMany('App\Order');
+	}
 }
