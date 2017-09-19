@@ -26,6 +26,9 @@ $app = new Laravel\Lumen\Application(
 $app->withFacades(); // Static interface to classes in the application's service containers
 $app->withEloquent(); // ORM
 
+// Database config
+$app->configure('database');
+
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
