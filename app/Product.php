@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model {
 
-	const SWITCH_CATEGORY = 2;
+	const CATEGORY_TOOLS = 1;
+	const CATEGORY_SWITCHES = 2;
 
 	/**
 	 * Set to false to prevent Laravel Eloquent to automatically create created_at and updated_at columns
