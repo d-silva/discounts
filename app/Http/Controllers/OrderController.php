@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Transformers\OrderTransformer;
 use App\Item;
 use App\Order;
 use App\Product;
@@ -17,6 +18,20 @@ use Mockery\Exception;
 use phpDocumentor\Reflection\Types\Integer;
 
 class OrderController extends Controller {
+
+	/**
+	 * @var OrderTransformer
+	 */
+	protected $orderTransformer;
+
+	/**
+	 * OrderController constructor.
+	 *
+	 * @param OrderTransformer $orderTransformer
+	 */
+	public function __construct( OrderTransformer $orderTransformer ) {
+		$this->orderTransformer = $orderTransformer;
+	}
 
 	public function index() {
 		$orders = Order::all();
@@ -54,6 +69,7 @@ class OrderController extends Controller {
 				$newItem->product()->associate( $product );
 
 				$newItem->quantity = $item['quantity'];
+				$newItem->unit_price = $item['unit-price'];
 
 				//Inserting item directly in the relation with the order
 				$order->items()->save( $newItem );
@@ -61,7 +77,7 @@ class OrderController extends Controller {
 
 			$discounts = $this->calculateDiscount( $order );
 
-			return response()->json( [$order, $discounts] );
+			return response()->json($this->orderTransformer->transformOutput($order));
 
 		} catch ( Exception $exception ) {
 			return response()->json( 'Failed with message: ' . $exception->getMessage() );
