@@ -19,6 +19,8 @@ class CreateTableItems extends Migration
 	        $table->string('product_id');
 	        $table->foreign('product_id')->references('id')->on('products');
 	        $table->integer('quantity');
+	        $table->decimal('unit_price', 6,2);
+
         });
     }
 

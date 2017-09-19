@@ -23,7 +23,7 @@ class Item extends Model {
 	 */
 	public $incrementing = false;
 
-	protected $fillable = ['order_id', 'product_id', 'quantity'];
+	protected $fillable = ['order_id', 'product_id', 'quantity', 'unit_price'];
 
 	/**
 	 * Get the order that owns the comment.
