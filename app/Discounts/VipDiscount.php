@@ -39,13 +39,15 @@ class VipDiscount implements Discount {
      * @param Order $order
      *
      */
-    public function calculateDiscount(Order $order) {
+    public function calculateDiscount( Order $order ): float {
 
         $customer = $order->customer;
 
         if ( $customer->revenue >= 1000 ) {
             $this->discount = $order->total * 0.10;
         }
+
+        return $this->discount;
     }
 
     /**

@@ -57,7 +57,7 @@ class SwitchesDiscount implements Discount {
      *
      * @return array
      */
-    public function calculateDiscount(Order $order) {
+    public function calculateDiscount(Order $order): float {
         $unitPrice = 0;
         $this->switchesInTheOrder = $order->countProductsByCategory(Product::CATEGORY_SWITCHES );
 
@@ -72,8 +72,7 @@ class SwitchesDiscount implements Discount {
             }
         }
 
-        $this->discount = $freeSwitches * $unitPrice;
-
+        return $this->discount = $freeSwitches * $unitPrice;
     }
 
     /**

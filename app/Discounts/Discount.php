@@ -6,7 +6,7 @@
  * Time: 19:47
  */
 
-namespace  App\Discounts;
+namespace App\Discounts;
 
 use \App\Order;
 
@@ -14,7 +14,6 @@ use \App\Order;
  * Interface Discount
  * @package App\Discounts
  */
-
 interface Discount {
     const TYPE_PERCENTAGE = 'percentage';
     const TYPE_AMOUNT = 'amount';
@@ -41,6 +40,6 @@ interface Discount {
     public function getDiscount(): array;
 
 
-    public function calculateDiscount(Order $order);
+    public function calculateDiscount( Order $order ): float;
 
 }

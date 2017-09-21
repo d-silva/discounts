@@ -46,9 +46,9 @@ class ToolsDiscount implements Discount {
      */
     public function getDiscount(): array {
         return $discount = [
-            'total' => $this->discount,
-            'tools' => $this->toolsInTheOrder,
-            'description' => 'If you buy two or more products of category "Tools" (id 1), you get a 20% discount on the cheapest product.'
+            'total'       => $this->discount,
+            'tools'       => $this->toolsInTheOrder,
+            'description' => 'If you buy two or more products of category "Tools" (id 1), you get a 20% discount on the cheapest product.',
         ];
     }
 
@@ -57,12 +57,14 @@ class ToolsDiscount implements Discount {
      *
      * @return array
      */
-    public function calculateDiscount(Order $order) {
+    public function calculateDiscount( Order $order ): float {
 
-        $this->toolsInTheOrder = $order->countProductsByCategory(Product::CATEGORY_TOOLS );
+        $this->toolsInTheOrder = $order->countProductsByCategory( Product::CATEGORY_TOOLS );
 
         if ( $this->toolsInTheOrder > 1 ) {
             $this->discount = $order->cheapestProduct()->price * 0.2;
         }
+
+        return $this->discount;
     }
 }
