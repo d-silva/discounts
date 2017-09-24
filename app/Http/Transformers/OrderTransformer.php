@@ -9,22 +9,49 @@
 namespace App\Http\Transformers;
 
 use App\Order;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class OrderTransformer extends Transformer {
 
-    public function transformInput( $order ) {
-
+    public function transformInput( $request ) {
+        return [
+            'id'          => $request->input( 'id' ),
+            'customer_id' => $request->input( 'customer-id' ),
+            'items'       => $request->input( 'items' ),
+            'total'       => $request->input( 'total' ),
+        ];
     }
 
-    public function transformOutput( $order ) {
+    /**
+     * @param Order $order
+     *
+     * @return array
+     */
+    public function transformOutput( $item ) {
+
+        if ( $item instanceof Collection ) {
+            $result = [];
+
+            foreach ( $item as $order ) {
+
+                $result[] = $this->getOutputFormat( $order );
+            }
+        } else {
+            $result = $this->getOutputFormat( $item );
+        }
+
+        return $result;
+    }
+
+    private function getOutputFormat( Order $order ) {
         return [
             'id'                    => $order->id,
             'customer-id'           => $order->customer->id,
             'items'                 => $order->itemsOutput(),
             'total'                 => $order->total,
-            'discounts_applied'     => $order->getDiscounts(),
-            'total_after_discounts' => $order->total - $order->getTotalDiscounts(),
+            'discounts'             => $order->discountsOutput(),
+            'total-after-discounts' => $order->total - $order->getTotalDiscounts(),
         ];
     }
 }
