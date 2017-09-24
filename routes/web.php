@@ -24,7 +24,7 @@ $router->group( [ 'prefix' => 'discounts/v1' ],
                 $router->get( '', 'CustomerController@show' );
                 $router->get( '/{id}', 'CustomerController@show' );
                 $router->post( '', 'CustomerController@store' );
-                $router->put( '', 'CustomerController@update' );
+                $router->put( '/{id}', 'CustomerController@update' );
                 $router->delete( '{id}', 'CustomerController@delete' );
             }
         );
@@ -35,7 +35,7 @@ $router->group( [ 'prefix' => 'discounts/v1' ],
                 $router->get( '', 'ProductController@show' );
                 $router->get( '/{id}', 'ProductController@show' );
                 $router->post( '', 'ProductController@store' );
-                $router->put( '', 'ProductController@update' );
+                $router->put( '/{id}', 'ProductController@update' );
                 $router->delete( '{id}', 'ProductController@delete' );
             }
         );
