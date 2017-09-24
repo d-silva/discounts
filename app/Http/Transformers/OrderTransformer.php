@@ -10,7 +10,6 @@ namespace App\Http\Transformers;
 
 use App\Order;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 
 class OrderTransformer extends Transformer {
 
@@ -34,17 +33,16 @@ class OrderTransformer extends Transformer {
             $result = [];
 
             foreach ( $item as $order ) {
-
-                $result[] = $this->getOutputFormat( $order );
+                $result[] = $this->getOutputOrderFormat( $order );
             }
         } else {
-            $result = $this->getOutputFormat( $item );
+            $result = $this->getOutputOrderFormat( $item );
         }
 
         return $result;
     }
 
-    private function getOutputFormat( Order $order ) {
+    private function getOutputOrderFormat( Order $order ) {
         return [
             'id'                    => $order->id,
             'customer-id'           => $order->customer->id,
