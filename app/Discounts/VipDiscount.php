@@ -14,11 +14,8 @@ use App\Product;
 class VipDiscount implements Discount {
 
     /**
-     * @var float
-     */
-    private $discount = 0.0;
-
-    /**
+     * Discount type
+     *
      * @return string
      */
     public function getType(): string {
@@ -26,37 +23,29 @@ class VipDiscount implements Discount {
     }
 
     /**
-     * @return float
+     * Discount description
+     *
+     * @return string
      */
-    public function getDiscount(): array {
-        return [
-            'total'       => $this->discount,
-            'description' => 'A customer who has already bought for over € 1000, gets a discount of 10% on the whole order.',
-        ];
+    public function getDescription(): string {
+        return 'A customer who has already bought for over € 1000, gets a discount of 10% on the whole order.';
     }
 
     /**
-     * @param Order $order
+     * Creates the discount
      *
+     * @param Order $order
      */
-    public function calculateDiscount( Order $order ): float {
-
+    public function calculateDiscount( Order $order ) {
         $customer = $order->customer;
 
         if ( $customer->revenue >= 1000 ) {
-            $this->discount = $order->total * 0.10;
+            $discount = new \App\Discount();
+            $discount->order()->associate( $order );
+            $discount->description = $this->getDescription();
+            $discount->type        = $this->getType();
+            $discount->amount      = (float) $order->total * 0.10;
+            $discount->save();
         }
-
-        return $this->discount;
     }
-
-    /**
-     * Returns the order in wich the discount run in comparison to other discounts
-     *
-     * @return int
-     */
-    public static function getRunOrder(): int {
-        return 2;
-    }
-
 }

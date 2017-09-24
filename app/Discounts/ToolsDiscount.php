@@ -14,27 +14,6 @@ use App\Product;
 class ToolsDiscount implements Discount {
 
     /**
-     * @var float
-     */
-    private $discount = 0.0;
-
-    /**
-     * @var int
-     */
-    private $toolsInTheOrder;
-
-    /**
-     * Returns the order in wich the discount run in comparison to other discounts
-     *
-     * Starting from 0
-     *
-     * @return int
-     */
-    public static function getRunOrder(): int {
-        return 0;
-    }
-
-    /**
      * @return string
      */
     public function getType(): string {
@@ -42,29 +21,30 @@ class ToolsDiscount implements Discount {
     }
 
     /**
-     * @return float
+     * Discount description
+     *
+     * @return string
      */
-    public function getDiscount(): array {
-        return $discount = [
-            'total'       => $this->discount,
-            'tools'       => $this->toolsInTheOrder,
-            'description' => 'If you buy two or more products of category "Tools" (id 1), you get a 20% discount on the cheapest product.',
-        ];
+    public function getDescription(): string {
+        return 'If you buy two or more products of category "Tools" (id 1), you get a 20% discount on the cheapest product.';
     }
 
     /**
-     * @param Order $order
+     * Calculate and creates the Discout
      *
-     * @return array
+     * @param Order $order
      */
-    public function calculateDiscount( Order $order ): float {
+    public function calculateDiscount( Order $order ) {
+        $countTools = $order->countProductsByCategory( Product::CATEGORY_TOOLS );
 
-        $this->toolsInTheOrder = $order->countProductsByCategory( Product::CATEGORY_TOOLS );
-
-        if ( $this->toolsInTheOrder > 1 ) {
-            $this->discount = $order->cheapestProduct()->price * 0.2;
+        if ( $countTools > 1 ) {
+            $discount = new \App\Discount();
+            $discount->order()->associate( $order );
+            $discount->type        = $this->getType();
+            $discount->description = $this->getDescription();
+            $discount->amount      = (float) $order->cheapestProduct()->price * 0.2;
+            $discount->save();
         }
-
-        return $this->discount;
     }
+
 }

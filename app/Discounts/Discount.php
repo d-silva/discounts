@@ -18,28 +18,27 @@ interface Discount {
     const TYPE_PERCENTAGE = 'percentage';
     const TYPE_AMOUNT = 'amount';
 
-    //public function __construct(Order $order);
-
     /**
-     * Returns the order in wich the discount run in comparison to other discounts
+     * Discount type
      *
-     * Starting from 0
-     *
-     * @return int
-     */
-    public static function getRunOrder(): int;
-
-    /**
      * @return string
      */
     public function getType(): string;
 
     /**
-     * @return float
+     * Discount description
+     *
+     * @return string
      */
-    public function getDiscount(): array;
+    public function getDescription(): string;
 
-
-    public function calculateDiscount( Order $order ): float;
+    /**
+     * Calculate and creates the discount
+     *
+     * @param Order $order
+     *
+     * @return \App\Discount|null
+     */
+    public function calculateDiscount( Order $order );
 
 }

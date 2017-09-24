@@ -14,27 +14,6 @@ use App\Product;
 class SwitchesDiscount implements Discount {
 
     /**
-     * @var float
-     */
-    private $discount = 0.0;
-
-    /**
-     * @var int
-     */
-    private $switchesInTheOrder;
-
-    /**
-     * Returns the order in wich the discount run in comparison to other discounts
-     *
-     * Starting from 0
-     *
-     * @return int
-     */
-    public static function getRunOrder(): int {
-        return 1;
-    }
-
-    /**
      * @return string
      */
     public function getType(): string {
@@ -44,35 +23,37 @@ class SwitchesDiscount implements Discount {
     /**
      * @return float
      */
-    public function getDiscount(): array {
-        return [
-            'total' => $this->discount,
-            'switches' => $this->switchesInTheOrder,
-            'description' => 'For every products of category "Switches" (id 2), when you buy five, you get a sixth for free.'
-        ];
+    public function getDescription(): string {
+        return 'For every products of category "Switches" (id 2), when you buy five, you get a sixth for free.';
     }
 
     /**
-     * @param Order $order
+     * Calculate and creates the Discount
      *
-     * @return array
+     * @param Order $order
      */
-    public function calculateDiscount(Order $order): float {
-        $unitPrice = 0;
-        $this->switchesInTheOrder = $order->countProductsByCategory(Product::CATEGORY_SWITCHES );
+    public function calculateDiscount( Order $order) {
+        $unitPrice     = 0;
+        $countSwitches = $order->countProductsByCategory( Product::CATEGORY_SWITCHES );
+        $freeSwitches  = $this->freeSwitches( $countSwitches );
 
-        $freeSwitches = $this->freeSwitches( $this->switchesInTheOrder );
+        if ( $freeSwitches > 0 ) {
+            $items = $order->items;
 
-        $items = $order->items;
-
-        foreach ( $items as $item ) {
-            $product = $item->product;
-            if ( $product->category == Product::CATEGORY_SWITCHES ) {
-                $unitPrice = $product->price;
+            foreach ( $items as $item ) {
+                $product = $item->product;
+                if ( $product->category == Product::CATEGORY_SWITCHES ) {
+                    $unitPrice = $product->price;
+                }
             }
-        }
 
-        return $this->discount = $freeSwitches * $unitPrice;
+            $discount = new \App\Discount();
+            $discount->order()->associate( $order );
+            $discount->type        = $this->getType();
+            $discount->description = $this->getDescription();
+            $discount->amount      = $freeSwitches * $unitPrice;
+            $discount->save();
+        }
     }
 
     /**
@@ -87,10 +68,10 @@ class SwitchesDiscount implements Discount {
 
         if ( ( $total - 6 ) >= 0 ) {
             $freeSwitches ++;
-
             return $this->freeSwitches( $total - 6, $freeSwitches );
         }
 
         return $freeSwitches;
     }
+
 }
