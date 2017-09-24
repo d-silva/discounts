@@ -10,6 +10,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model {
 
@@ -29,8 +30,6 @@ class Order extends Model {
 
     protected $fillable = [ 'id', 'customer_id', 'total' ];
 
-    protected $discounts = [];
-
     /**
      * Get the order that owns the comment.
      */
@@ -47,8 +46,26 @@ class Order extends Model {
         return $this->hasMany( 'App\Item' );
     }
 
+    /**
+     * This order discounts
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function discounts() {
+        return $this->hasMany( 'App\Discount' );
+    }
+
+
     public function itemsOutput() {
-        return $this->hasMany( 'App\Item' )->get( [ 'product_id', 'quantity', 'unit_price' ] );
+        return DB::select( 'SELECT product_id, quantity, unit_price, (quantity * unit_price) as total '
+                           . 'FROM items '
+                           . 'WHERE order_id = ' . $this->id
+        );
+    }
+
+
+    public function discountsOutput() {
+        return $this->hasMany( 'App\Discount' )->get( [ 'description', 'amount' ] );
     }
 
     /**
@@ -64,7 +81,7 @@ class Order extends Model {
     }
 
     /**
-     * Counts the Products with a given category present in a Order
+     * Counts the Products with a given category present in the Order
      *
      * @param $category
      *
@@ -79,26 +96,13 @@ class Order extends Model {
                           ->sum( 'items.quantity' );
     }
 
-
-    public function setDiscounts( $discounts ) {
-        $this->discounts = $discounts;
-    }
-
-    public function getDiscounts() {
-        return $this->discounts;
-    }
-
+    /**
+     * Sums all the discounts amount for this Order
+     * @return mixed
+     */
     public function getTotalDiscounts() {
-        $total = 0;
-
-        array_walk_recursive( $this->discounts,
-            function ( $val, $key ) use ( &$total ) {
-                if ( $key == 'total' ) {
-                    $total = $total + $val;
-                }
-            } );
-
-        return $total;
+        return $this->discounts()
+                    ->sum( 'discounts.amount' );
     }
 
 }
