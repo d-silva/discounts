@@ -14,15 +14,19 @@ use Illuminate\Database\Eloquent\Collection;
 class CustomerTransformer extends Transformer {
 
     public function transformInput( $request ) {
-        return [
-            'name'    => $request->input( 'name' ),
-            'since'   => $request->input( 'since' )
-                ? $request->input( 'since' )
-                : date( 'Y-m-d' ),
-            'revenue' => $request->input( 'revenue' )
-                ? $request->input( 'revenue' )
-                : 0,
-        ];
+
+        if ( $request->isMethod( 'POST' ) ) {
+            return [
+                'name'    => $request->input( 'name' ),
+                'since'   => $request->input( 'since' )
+                    ? $request->input( 'since' )
+                    : date( 'Y-m-d' ),
+                'revenue' => $request->input( 'revenue' )
+                    ? $request->input( 'revenue' )
+                    : 0,
+            ];
+        }
+
     }
 
     /**

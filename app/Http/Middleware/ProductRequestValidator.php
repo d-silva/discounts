@@ -22,7 +22,7 @@ class ProductRequestValidator {
      */
     public function handle( $request, Closure $next ) {
 
-        if ( $request->isMethod( 'DELETE' ) || $request->isMethod( 'GET' ) ) {
+        if ( ! $request->isMethod( 'POST' ) ) {
             return $next( $request );
         }
 

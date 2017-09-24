@@ -16,7 +16,7 @@ class CustomerRequestValidator {
      */
     public function handle( $request, Closure $next ) {
 
-        if ( $request->isMethod( 'GET' ) ) {
+        if ( ! $request->isMethod( 'POST' ) ) {
             return $next( $request );
         }
 
