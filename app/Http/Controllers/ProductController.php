@@ -9,42 +9,81 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller {
 
-	/**
-	 * Lists all products
-	 *
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	public function index() {
-		$products = Product::all();
+    /**
+     * List one Product if product id is passed in url
+     * or lists all existing Products
+     *
+     * @param int|null $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show( string $id = null ) {
+        try {
+            if ( ! is_null( $id ) ) {
+                return response()->json( Product::findOrFail( $id ) );
+            }
 
-		return response()->json($products);
-	}
+            return response()->json( Product::all() );
+        } catch ( ModelNotFoundException $e ) {
+            return response()->json( 'Product does not exist', 404 );
+        }
+    }
 
-	public function createProduct(Request $request) {
-		$product = Product::create($request->all());
+    /**
+     * Create Product
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store( Request $request ) {
+        $product = Product::create( $request->all() );
+        $product->save();
 
-		return response()->json($product);
-	}
+        return response()->json( $product );
+    }
 
-	public function updateProduct(Request $request, $productId) {
-		$product = Product::find($productId);
+    /**
+     * Delete Product
+     *
+     * @param $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete( $id ) {
+        try {
+            $product = Product::findOrFail( $id );
+            $product->delete();
 
-		$product->id = $request->input('id');
+            return response()->json( 'Removed product ' . $id . ' successfully.' );
+        } catch ( ModelNotFoundException $exception ) {
+            return response()->json( 'Product does not exist', 204 );
+        }
+    }
 
-		$product->save();
+    /**
+     * Update Product
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update( Request $request, $id ) {
+        try {
+            $product = Product::findOrFail( $id );
+            $product->fill( $request->all() );
+            $product->save();
 
-		return response()->json($product);
-	}
+            return response()->json( $product );
+        } catch ( ModelNotFoundException $exception ) {
+            return response()->json( 'Product does not exist', 404 );
+        }
 
-	public function deleteProduct($productId) {
-		$product = Product::find($productId);
-
-		$product->delete();
-
-		return response()->json('Product ' . $productId . ' deleted successfully');
-	}
+    }
 }

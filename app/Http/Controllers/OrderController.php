@@ -15,6 +15,7 @@ use App\Item;
 use App\Order;
 use App\Product;
 use App\Customer;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Mockery\Exception;
 
@@ -28,7 +29,7 @@ class OrderController extends Controller {
     /**
      * @var DiscountCollection
      */
-    private $discounts;
+    private $activeDiscounts;
 
     /**
      * OrderController constructor.
@@ -36,18 +37,42 @@ class OrderController extends Controller {
      * @param OrderTransformer $orderTransformer
      * @param Discount $discount
      */
-    public function __construct( OrderTransformer $orderTransformer, DiscountCollection $discounts ) {
+    public function __construct(
+        OrderTransformer $orderTransformer,
+        DiscountCollection $activeDiscounts
+    ) {
         $this->orderTransformer = $orderTransformer;
-        $this->discounts        = $discounts;
+        $this->activeDiscounts  = $activeDiscounts;
     }
 
-    public function index() {
-        $orders = Order::all();
+    /**
+     * Lists one Order by a given id or all Orders
+     *
+     * @param int|null $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show( int $id = null ) {
 
-        return response()->json( $orders );
+        try {
+            if ( ! is_null( $id ) ) {
+                return response()->json( $this->orderTransformer->transformOutput( Order::findOrFail( $id ) ) );
+            }
+
+            return response()->json( $this->orderTransformer->transformOutput( Order::all() ) );
+        } catch ( ModelNotFoundException $e ) {
+            return response()->json( [], 404 );
+        }
     }
 
-    public function createOrder( Request $request ) {
+    /**
+     * Creates a Order and respective discounts associated with it
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store( Request $request ) {
 
         try {
             $order     = new Order();
@@ -83,8 +108,8 @@ class OrderController extends Controller {
                 $order->items()->save( $newItem );
             }
 
-            $discounts = $this->orderDiscount( $order );
-            $order->setDiscounts( $discounts );
+            // applying active discounts
+            $this->applyDiscounts( $order );
 
             return response()->json( $this->orderTransformer->transformOutput( $order ) );
 
@@ -94,16 +119,10 @@ class OrderController extends Controller {
 
     }
 
-    private function orderDiscount( Order $order ) {
-        $discountsApplied = [];
-
-        foreach ( $this->discounts as $discount ) {
-            if ( $discount->calculateDiscount( $order ) > 0 ) {
-                $discountsApplied[] = $discount->getDiscount();
-            }
+    private function applyDiscounts( Order $order ) {
+        foreach ( $this->activeDiscounts as $discount ) {
+            $discount->calculateDiscount( $order );
         }
-
-        return $discountsApplied;
     }
 }
 

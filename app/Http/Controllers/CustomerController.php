@@ -9,42 +9,97 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Http\Transformers\CustomerTransformer;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller {
 
-	/**
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	public function index() {
-		$customers = Customer::all();
+    /**
+     * @var CustomerTransformer
+     */
+    private $transformer;
 
-		return response()->json($customers);
-	}
+    /**
+     * OrderController constructor.
+     *
+     * @param CustomerTransformer $transformer
+     *
+     * @internal param OrderTransformer $orderTransformer
+     * @internal param Discount $discount
+     */
+    public function __construct( CustomerTransformer $transformer ) {
+        $this->transformer = $transformer;
+    }
 
-	/**
-	 * @param Request $request
-	 *
-	 * @return \Illuminate\Http\JsonResponse
-	 */
-	public function createCustomer(Request $request) {
-		$customer = Customer::create($request->all());
+    /**
+     * List Customer(s)
+     *
+     * @param int|null $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show( int $id = null ) {
+        try {
+            if ( ! is_null( $id ) ) {
+                return response()->json( Customer::findOrFail( $id ) );
+            }
 
-		return response()->json($customer);
-	}
+            return response()->json( Customer::all() );
+        } catch ( ModelNotFoundException $e ) {
+            return response()->json( 'Customer does not exist', 404 );
+        }
+    }
 
-	public function deleteCustomer($customerId) {
-		$customer = Customer::find($customerId);
-		$customer->delete();
+    /**
+     * Create Customer
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store( Request $request ) {
+        $customer = Customer::create( $this->transformer->transformInput( $request ) );
+        $customer->save();
 
-		return response()->json('Removed customer ' . $customerId . ' successfully.');
-	}
+        return response()->json( $customer );
+    }
 
-	public function updateCustomer(Request $request, $customerId) {
-		$customer = Customer::find($customerId);
-		$customer->revenue($request->input('revenue'));
-		$customer->save();
+    /**
+     * Delete Product
+     *
+     * @param $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete( $id ) {
+        try {
+            $customer = Customer::findOrFail( $id );
+            $customer->delete();
 
-		return response()->json($customer);
-	}
+            return response()->json( 'Removed customer ' . $id . ' successfully.' );
+        } catch ( ModelNotFoundException $exception ) {
+            return response()->json( 'Customer does not exist', 204 );
+        }
+    }
+
+    /**
+     * Update Customer
+     *
+     * @param Request $request
+     * @param         $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update( Request $request, $id ) {
+        try {
+            $customer = Customer::findOrFail( $id );
+            $customer->fill( $request->all() );
+            $customer->save();
+
+            return response()->json( $customer );
+        } catch ( ModelNotFoundException $exception ) {
+            return response()->json( 'Customer does not exist', 404 );
+        }
+    }
 }
