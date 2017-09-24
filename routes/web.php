@@ -10,25 +10,44 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-$router->get( '/', function () use ( $router ) {
-	return $router->app->version();
-} );
+$router->get( '/',
+    function () use ( $router ) {
+        return $router->app->version();
+    } );
 
-$router->group( [ 'prefix' => 'discounts/v1' ], function ( $router ) {
-	//Customer routes
-	$router->get( 'customer', 'CustomerController@index' );
-	$router->post( 'customer', 'CustomerController@createCustomer' );
-	$router->put( 'customer', 'CustomerController@updateCustomer' );
-	$router->delete( 'customer', 'CustomerController@deleteCustomer' );
+$router->group( [ 'prefix' => 'discounts/v1' ],
+    function ( $router ) {
 
-	//product routes
-	$router->get( 'product', 'ProductController@index' );
-	$router->post( 'product', 'ProductController@createProduct' );
-	$router->put( 'product', 'ProductController@updateProduct' );
-	$router->delete( 'product', 'ProductController@deleteProduct' );
+        //Customer routes
+        $router->group( [ 'prefix' => 'customer', 'middleware' => 'customer' ],
+            function ( $router ) {
+                $router->get( '', 'CustomerController@show' );
+                $router->get( '/{id}', 'CustomerController@show' );
+                $router->post( '', 'CustomerController@store' );
+                $router->put( '', 'CustomerController@update' );
+                $router->delete( '{id}', 'CustomerController@delete' );
+            }
+        );
 
-	//order routes
-	$router->get( 'order', 'OrderController@index' );
-	$router->post( 'order', 'OrderController@createOrder' );
-} );
+        //product routes
+        $router->group( [ 'prefix' => 'product', 'middleware' => 'product' ],
+            function ( $router ) {
+                $router->get( '', 'ProductController@show' );
+                $router->get( '/{id}', 'ProductController@show' );
+                $router->post( '', 'ProductController@store' );
+                $router->put( '', 'ProductController@update' );
+                $router->delete( '{id}', 'ProductController@delete' );
+            }
+        );
+
+        //order routes
+        $router->group( [ 'prefix' => 'order', 'middleware' => 'order' ],
+            function ( $router ) {
+                $router->get( '', 'OrderController@show' );
+                $router->get( '/{id}', 'OrderController@show' );
+                $router->post( '', 'OrderController@store' );
+            }
+        );
+
+    } );
 
