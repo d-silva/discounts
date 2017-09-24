@@ -27,13 +27,17 @@ class ProductRequestValidator {
         }
 
         $rules = [
-            'id'          => 'required|unique:products,id',
             'description' => 'string|max:255',
             'category'    => 'required|numeric',
             'price'       => 'required|numeric',
         ];
 
-        $validator = Validator::make( $request->input(), $rules );
+        if ( $request->isMethod( 'PUT' ) ) {
+            $validator = Validator::make( $request->input(), $rules );
+        } else {
+            $rules['id'] = 'required|unique:products,id';
+            $validator   = Validator::make( $request->input(), $rules );
+        }
 
         if ( $validator->fails() ) {
             return response()->json( $validator->errors(), 400 );
