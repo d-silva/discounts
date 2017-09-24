@@ -13,7 +13,7 @@ use App\Http\Transformers\CustomerTransformer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class CustomerController extends Controller {
+class CustomerController extends ApiController {
 
     /**
      * @var CustomerTransformer
@@ -45,9 +45,9 @@ class CustomerController extends Controller {
                 return response()->json( Customer::findOrFail( $id ) );
             }
 
-            return response()->json( Customer::all() );
+            return $this->respond( [ 'data' => Customer::all() ] );
         } catch ( ModelNotFoundException $e ) {
-            return response()->json( 'Customer does not exist', 404 );
+            return $this->respondNotFound( 'Customer does not exist' );
         }
     }
 
@@ -62,7 +62,7 @@ class CustomerController extends Controller {
         $customer = Customer::create( $this->transformer->transformInput( $request ) );
         $customer->save();
 
-        return response()->json( $customer );
+        return $this->respond( [ 'data' => $customer ] );
     }
 
     /**
@@ -77,9 +77,9 @@ class CustomerController extends Controller {
             $customer = Customer::findOrFail( $id );
             $customer->delete();
 
-            return response()->json( 'Removed customer ' . $id . ' successfully.' );
+            return $this->respond( 'Removed customer ' . $id . ' successfully.' );
         } catch ( ModelNotFoundException $exception ) {
-            return response()->json( 'Customer does not exist', 204 );
+            return $this->setStatusCode( 204 )->respond( 'Customer does not exist' );
         }
     }
 
@@ -97,9 +97,9 @@ class CustomerController extends Controller {
             $customer->fill( $request->all() );
             $customer->save();
 
-            return response()->json( $customer );
+            return $this->respond( [ 'data' => $customer ] );
         } catch ( ModelNotFoundException $exception ) {
-            return response()->json( 'Customer does not exist', 404 );
+            return $this->respondNotFound( 'Customer does not exist' );
         }
     }
 }

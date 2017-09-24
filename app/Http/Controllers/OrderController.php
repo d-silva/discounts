@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Mockery\Exception;
 
-class OrderController extends Controller {
+class OrderController extends ApiController {
 
     /**
      * @var OrderTransformer
@@ -35,7 +35,7 @@ class OrderController extends Controller {
      * OrderController constructor.
      *
      * @param OrderTransformer $orderTransformer
-     * @param Discount $discount
+     * @param Discount         $discount
      */
     public function __construct(
         OrderTransformer $orderTransformer,
@@ -59,9 +59,9 @@ class OrderController extends Controller {
                 return response()->json( $this->orderTransformer->transformOutput( Order::findOrFail( $id ) ) );
             }
 
-            return response()->json( $this->orderTransformer->transformOutput( Order::all() ) );
+            return $this->respond( [ 'data' => $this->orderTransformer->transformOutput( Order::all() ) ] );
         } catch ( ModelNotFoundException $e ) {
-            return response()->json( [], 404 );
+            return $this->respondNotFound( 'Order not found!' );
         }
     }
 
@@ -111,10 +111,11 @@ class OrderController extends Controller {
             // applying active discounts
             $this->applyDiscounts( $order );
 
-            return response()->json( $this->orderTransformer->transformOutput( $order ) );
+            return $this->respond( [ 'data' => $this->orderTransformer->transformOutput( $order ) ] );
 
         } catch ( Exception $exception ) {
-            return response()->json( 'Failed with message: ' . $exception->getMessage(), 400 );
+            return $this->setStatusCode( 400 )->respondWithError( 'Failed with message: ' . $exception->getMessage() );
+
         }
 
     }

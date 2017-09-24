@@ -12,7 +12,7 @@ use App\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller {
+class ProductController extends ApiController {
 
     /**
      * List one Product if product id is passed in url
@@ -28,9 +28,9 @@ class ProductController extends Controller {
                 return response()->json( Product::findOrFail( $id ) );
             }
 
-            return response()->json( Product::all() );
+            return $this->respond( [ 'data' => Product::all() ] );
         } catch ( ModelNotFoundException $e ) {
-            return response()->json( 'Product does not exist', 404 );
+            return $this->respondNotFound( 'Product does not exist' );
         }
     }
 
@@ -45,7 +45,7 @@ class ProductController extends Controller {
         $product = Product::create( $request->all() );
         $product->save();
 
-        return response()->json( $product );
+        return $this->respond( [ 'data' => $product ] );
     }
 
     /**
@@ -60,9 +60,9 @@ class ProductController extends Controller {
             $product = Product::findOrFail( $id );
             $product->delete();
 
-            return response()->json( 'Removed product ' . $id . ' successfully.' );
+            return $this->respond( 'Removed product ' . $id . ' successfully.' );
         } catch ( ModelNotFoundException $exception ) {
-            return response()->json( 'Product does not exist', 204 );
+            return $this->setStatusCode( 204 )->respond( 'Product does not exist' );
         }
     }
 
@@ -80,9 +80,9 @@ class ProductController extends Controller {
             $product->fill( $request->all() );
             $product->save();
 
-            return response()->json( $product );
+            return $this->respond( [ 'data' => $product ] );
         } catch ( ModelNotFoundException $exception ) {
-            return response()->json( 'Product does not exist', 404 );
+            return $this->respondNotFound( 'Product does not exist' );
         }
 
     }
