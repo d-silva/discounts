@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 class ProductController extends ApiController {
 
     /**
+     * ProductController constructor.
+     */
+    public function __construct() {
+        $this->middleware( 'auth', [ 'except' => [ 'show' ] ] );
+    }
+
+    /**
      * List one Product if product id is passed in url
      * or lists all existing Products
      *

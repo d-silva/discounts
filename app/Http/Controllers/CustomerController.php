@@ -30,6 +30,8 @@ class CustomerController extends ApiController {
      */
     public function __construct( CustomerTransformer $transformer ) {
         $this->transformer = $transformer;
+
+        $this->middleware( 'auth', [ 'except' => [ 'show' ] ] );
     }
 
     /**

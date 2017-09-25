@@ -43,6 +43,8 @@ class OrderController extends ApiController {
     ) {
         $this->orderTransformer = $orderTransformer;
         $this->activeDiscounts  = $activeDiscounts;
+
+        $this->middleware( 'auth', [ 'only' => [ 'store' ] ] );
     }
 
     /**

@@ -66,6 +66,7 @@ $app->singleton(
 // ]);
 
 $app->routeMiddleware( [
+    'auth'     => \App\Http\Middleware\Authenticate::class,
     'customer' => \App\Http\Middleware\CustomerRequestValidator::class,
     'product'  => \App\Http\Middleware\ProductRequestValidator::class,
     'order'    => \App\Http\Middleware\OrderRequestValidator::class,
@@ -82,8 +83,8 @@ $app->routeMiddleware( [
 |
 */
 
+$app->register( App\Providers\AuthServiceProvider::class );
 $app->register( App\Providers\AppServiceProvider::class );
-// $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
 /*
