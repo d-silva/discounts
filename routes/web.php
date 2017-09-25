@@ -19,7 +19,7 @@ $router->group( [ 'prefix' => 'discounts/v1' ],
     function ( $router ) {
 
         //Customer routes
-        $router->group( [ 'prefix' => 'customer', 'middleware' => 'customer' ],
+        $router->group( [ 'prefix' => 'customers', 'middleware' => 'customer' ],
             function ( $router ) {
                 $router->get( '', 'CustomerController@show' );
                 $router->get( '/{id}', 'CustomerController@show' );
@@ -30,7 +30,7 @@ $router->group( [ 'prefix' => 'discounts/v1' ],
         );
 
         //product routes
-        $router->group( [ 'prefix' => 'product', 'middleware' => 'product' ],
+        $router->group( [ 'prefix' => 'products', 'middleware' => 'product' ],
             function ( $router ) {
                 $router->get( '', 'ProductController@show' );
                 $router->get( '/{id}', 'ProductController@show' );
@@ -41,7 +41,7 @@ $router->group( [ 'prefix' => 'discounts/v1' ],
         );
 
         //order routes
-        $router->group( [ 'prefix' => 'order', 'middleware' => 'order' ],
+        $router->group( [ 'prefix' => 'orders', 'middleware' => 'order' ],
             function ( $router ) {
                 $router->get( '', 'OrderController@show' );
                 $router->get( '/{id}', 'OrderController@show' );
