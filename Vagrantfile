@@ -37,7 +37,7 @@ cat << 'EOF' > /tmp/default
 server {
   listen 80;
 
-  root /vagrant;
+  root /vagrant/public/;
   index index.php index.html index.htm;
 
   # Make site accessible from any domain
@@ -46,7 +46,7 @@ server {
   location / {
     # First attempt to serve request as file, then
     # as directory, then fall back to index.html
-    try_files $uri $uri/ /index.html;
+    try_files $uri $uri/ /index.php;
   }
 
   location /doc/ {
@@ -154,6 +154,12 @@ $cfg['UploadDir'] = '';
 $cfg['SaveDir'] = '';
 EOF
 sudo mv /tmp/config.inc.php /usr/share/phpmyadmin/config.inc.php
+
+# Bootstrapping the project
+cd /vagrant && composer update
+mysql -uroot -e "CREATE DATABASE discounts;"
+php artisan migrate
+php artisan db:seed
 SCRIPT
 
 # -*- mode: ruby -*-
