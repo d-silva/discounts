@@ -33,6 +33,8 @@ class ToolsDiscount implements Discount {
      * Calculate and creates the Discout
      *
      * @param Order $order
+     *
+     * @return \App\Discount|null|void
      */
     public function calculateDiscount( Order $order ) {
         $countTools = $order->countProductsByCategory( Product::CATEGORY_TOOLS );
@@ -42,7 +44,7 @@ class ToolsDiscount implements Discount {
             $discount->order()->associate( $order );
             $discount->type        = $this->getType();
             $discount->description = $this->getDescription();
-            $discount->amount      = (float) $order->cheapestProduct()->price * 0.2;
+            $discount->amount      = (float) $order->cheapestProduct( Product::CATEGORY_TOOLS )->price * 0.2;
             $discount->save();
         }
     }

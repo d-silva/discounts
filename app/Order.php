@@ -73,11 +73,25 @@ class Order extends Model {
      *
      * @return Model|null|static
      */
-    public function cheapestProduct() {
+    public function cheapestProduct( $category ) {
         return $this->items()
                     ->join( 'products', 'items.product_id', '=', 'products.id' )
+                    ->where( 'products.category', '=', $category )
                     ->orderBy( 'products.price', 'asc' )
                     ->first();
+    }
+
+    /**
+     * Return the Order items by Product category
+     *
+     * @return Model|null|static
+     */
+    public function getItemsByCategoryProduct( $category ) {
+        return $this->items()
+                    ->join( 'products', 'items.product_id', '=', 'products.id' )
+                    ->where( 'products.category', '=', $category )
+                    ->orderBy( 'items.unit_price', 'asc' )
+                    ->get();
     }
 
     /**

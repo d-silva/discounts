@@ -10,10 +10,14 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+
+/* Because silence is gold
+
 $router->get( '/',
     function () use ( $router ) {
         return $router->app->version();
     } );
+*/
 
 $router->group( [ 'prefix' => 'discounts/v1' ],
     function ( $router ) {

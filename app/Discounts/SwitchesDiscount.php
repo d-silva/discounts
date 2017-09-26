@@ -32,26 +32,37 @@ class SwitchesDiscount implements Discount {
      *
      * @param Order $order
      */
-    public function calculateDiscount( Order $order) {
-        $unitPrice     = 0;
+    public function calculateDiscount( Order $order ) {
+        $amount        = 0;
         $countSwitches = $order->countProductsByCategory( Product::CATEGORY_SWITCHES );
         $freeSwitches  = $this->freeSwitches( $countSwitches );
 
-        if ( $freeSwitches > 0 ) {
-            $items = $order->items;
 
-            foreach ( $items as $item ) {
-                $product = $item->product;
-                if ( $product->category == Product::CATEGORY_SWITCHES ) {
-                    $unitPrice = $product->price;
+        if ( $freeSwitches > 0 ) {
+            $switches = $order->getItemsByCategoryProduct( Product::CATEGORY_SWITCHES );
+//            $nCheapestProducts = $order->cheapestProduct( Product::CATEGORY_SWITCHES, $freeSwitches);
+
+            foreach ( $switches as $item ) {
+
+                if ( $freeSwitches <= 0 ) {
+                    break;
                 }
+
+                if ( $freeSwitches <= $item->quantity ) {
+                    $amount += ( $item->unit_price * $freeSwitches );
+                    break;
+                } else {
+                    $amount       += ( $item->unit_price * $item->quantity );
+                    $freeSwitches -= $item->quantity;
+                }
+
             }
 
             $discount = new \App\Discount();
             $discount->order()->associate( $order );
             $discount->type        = $this->getType();
             $discount->description = $this->getDescription();
-            $discount->amount      = $freeSwitches * $unitPrice;
+            $discount->amount      = $amount;
             $discount->save();
         }
     }
@@ -59,7 +70,7 @@ class SwitchesDiscount implements Discount {
     /**
      * Returns the quantity of free switches in the order
      *
-     * @param $total
+     * @param     $total
      * @param int $freeSwitches
      *
      * @return int
@@ -68,6 +79,7 @@ class SwitchesDiscount implements Discount {
 
         if ( ( $total - 6 ) >= 0 ) {
             $freeSwitches ++;
+
             return $this->freeSwitches( $total - 6, $freeSwitches );
         }
 
