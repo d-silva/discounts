@@ -160,6 +160,7 @@ cd /vagrant && composer update
 mysql -uroot -e "CREATE DATABASE discounts;"
 php artisan migrate
 php artisan db:seed
+php artisan passport:install
 SCRIPT
 
 # -*- mode: ruby -*-

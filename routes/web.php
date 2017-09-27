@@ -11,47 +11,12 @@
 |
 */
 
-/* Because silence is gold
-
+/* */
 $router->get( '/',
     function () use ( $router ) {
-        return $router->app->version();
+        return response()->json( [ 'message' => 'Contact me on silva.diogo1990[at]gmail[dot]com in order to get access to the API' ] );
     } );
-*/
 
-$router->group( [ 'prefix' => 'discounts/v1' ],
-    function ( $router ) {
-
-        //Customer routes
-        $router->group( [ 'prefix' => 'customers', 'middleware' => 'customer' ],
-            function ( $router ) {
-                $router->get( '', 'CustomerController@show' );
-                $router->get( '/{id}', 'CustomerController@show' );
-                $router->post( '', 'CustomerController@store' );
-                $router->put( '/{id}', 'CustomerController@update' );
-                $router->delete( '{id}', 'CustomerController@delete' );
-            }
-        );
-
-        //product routes
-        $router->group( [ 'prefix' => 'products', 'middleware' => 'product' ],
-            function ( $router ) {
-                $router->get( '', 'ProductController@show' );
-                $router->get( '/{id}', 'ProductController@show' );
-                $router->post( '', 'ProductController@store' );
-                $router->put( '/{id}', 'ProductController@update' );
-                $router->delete( '{id}', 'ProductController@delete' );
-            }
-        );
-
-        //order routes
-        $router->group( [ 'prefix' => 'orders', 'middleware' => 'order' ],
-            function ( $router ) {
-                $router->get( '', 'OrderController@show' );
-                $router->get( '/{id}', 'OrderController@show' );
-                $router->post( '', 'OrderController@store' );
-            }
-        );
-
-    } );
+$router->post( '/login', 'Auth\LoginController@login' );
+$router->post( '/refresh-token', 'Auth\LoginController@refreshToken' );
 

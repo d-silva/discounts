@@ -26,9 +26,11 @@ $app = new Laravel\Lumen\Application(
 $app->withFacades(); // Static interface to classes in the application's service containers
 $app->withEloquent(); // ORM
 
-// Database config
+// config files
+$app->configure( 'app' );
 $app->configure( 'database' );
-
+$app->configure( 'auth' );
+$app->configure( 'secrets' );
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -50,6 +52,11 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->singleton(
+    Illuminate\Contracts\Cookie\QueueingFactory::class,
+    'cookie'
+);
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -64,6 +71,11 @@ $app->singleton(
 // $app->middleware([
 //    App\Http\Middleware\ExampleMiddleware::class
 // ]);
+
+$app->middleware( [
+    Illuminate\Cookie\Middleware\EncryptCookies::class,
+    Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+] );
 
 $app->routeMiddleware( [
     'auth'     => \App\Http\Middleware\Authenticate::class,
@@ -85,7 +97,22 @@ $app->routeMiddleware( [
 
 $app->register( App\Providers\AuthServiceProvider::class );
 $app->register( App\Providers\AppServiceProvider::class );
-// $app->register(App\Providers\EventServiceProvider::class);
+$app->register( Illuminate\Cookie\CookieServiceProvider::class );
+$app->register( Laravel\Passport\PassportServiceProvider::class );
+$app->register( Dusterio\LumenPassport\PassportServiceProvider::class );
+
+/*
+$LaravelPassportClass = Laravel\Passport\PassportServiceProvider::class;
+$LumenPassportClass   = Dusterio\LumenPassport\PassportServiceProvider::class;
+if ( class_exists( $LaravelPassportClass ) && class_exists( $LumenPassportClass ) ) {
+
+    $app->register( $LaravelPassportClass );
+    $app->register( $LumenPassportClass );
+
+// register routes
+
+}*/
+
 
 /*
 |--------------------------------------------------------------------------
@@ -98,11 +125,26 @@ $app->register( App\Providers\AppServiceProvider::class );
 |
 */
 
+Dusterio\LumenPassport\LumenPassport::routes( $app );
+
 $app->router->group( [
     'namespace' => 'App\Http\Controllers',
 ],
     function ( $router ) {
         require __DIR__ . '/../routes/web.php';
     } );
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+$app->router->group( [
+    'namespace' => 'App\Http\Controllers',
+],
+    function ( $router ) {
+        require __DIR__ . '/../routes/api.php';
+    } );
+
 
 return $app;
