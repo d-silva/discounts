@@ -18,12 +18,17 @@ The order in wich the discounts are instantiated is the order in which they will
 
 ## Run ##
 1. vagrant up
-2. Access API on 192.168.33.10
+2. Copy the **Client ID: 2** output of ```php artisan passport:install``` command and fill the last two params of .env 
+with that info.
+3. Fill the rest of the .env file with the 
+3. Access API on 192.168.33.10
 
 ### Routes ###
 
 | METHOD | URI |
 |--------|------------------------------|
+| POST | /login |
+|  |  |
 | GET | /discounts/v1/customers |
 | GET | /discounts/v1/customers/{id} |
 | POST | /discounts/v1/customers |

@@ -32,7 +32,7 @@ return [
     |
     */
 
-    'key' => env( 'APP_KEY', 'bPik0CH3ED2IS8*E^PH-mdKoY3rNTvk7' ),
+    'key' => env( 'APP_KEY', 'wyLc53kP3X$w+@J8FE7Fkcuf4t+^2adC' ),
 
     'cipher'          => 'AES-256-CBC',
 

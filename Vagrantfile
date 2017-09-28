@@ -159,8 +159,8 @@ sudo mv /tmp/config.inc.php /usr/share/phpmyadmin/config.inc.php
 cd /vagrant && composer update
 mysql -uroot -e "CREATE DATABASE discounts;"
 php artisan migrate
-php artisan db:seed
 php artisan passport:install
+php artisan db:seed
 SCRIPT
 
 # -*- mode: ruby -*-
